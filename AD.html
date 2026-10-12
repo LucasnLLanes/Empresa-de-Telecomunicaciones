@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe Árbol de Decisión - Telecomunicaciones | Lucas Llanes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: #f0f2f5;
+      color: #1e293b;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    /* Encabezado: logo a la izquierda, título centrado */
+    .header {
+      background: #ffffff;
+      padding: 20px 40px;
+      border-bottom: 3px solid #c9a227;
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 80px;
+    }
+    .header img {
+      height: 55px;
+      width: auto;
+      display: block;
+      position: absolute;
+      left: 40px;
+    }
+    .header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0a2540;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin: 0 auto;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Portada */
+    .portada {
+      background: linear-gradient(135deg, #0a2540 0%, #1e3a8a 100%);
+      color: white;
+      padding: 60px 40px;
+      text-align: center;
+      position: relative;
+    }
+    .portada::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: #c9a227;
+    }
+    .portada h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+    .portada p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      margin: 5px 0;
+      font-weight: 300;
+    }
+    .portada .destacado {
+      font-weight: 700;
+      color: #c9a227;
+    }
+
+    /* Contenido */
+    .contenido { padding: 40px; }
+    .seccion {
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .seccion:last-child { border-bottom: none; margin-bottom: 0; }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0a2540;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 24px;
+      background: #c9a227;
+      border-radius: 3px;
+    }
+    h3 { font-size: 1.2rem; font-weight: 600; color: #1e3a8a; margin: 25px 0 15px 0; }
+    h4 { font-size: 1.05rem; font-weight: 600; color: #334155; margin: 20px 0 10px 0; }
+    p { margin-bottom: 15px; color: #000000; }
+    ul, ol { margin: 15px 0 20px 20px; color: #334155; }
+    li { margin-bottom: 8px; }
+
+    /* Código */
+    pre {
+      background: #0a2540;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 15px 0;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      border-left: 4px solid #c9a227;
+    }
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #0a2540;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; }
+
+    /* Tablas */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    th {
+      background: #0a2540;
+      color: #ffffff;
+      font-weight: 600;
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 3px solid #c9a227;
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+      color: #000000;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f8fafc; }
+
+    /* Bloques de resultado */
+    .resultado {
+      background: #fffbeb;
+      border-left: 4px solid #c9a227;
+      padding: 15px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 15px 0;
+      font-weight: 500;
+    }
+    .resultado strong { color: #0a2540; }
+
+    /* Nota aclaratoria */
+    .nota {
+      background: #eff6ff;
+      border-left: 4px solid #1e3a8a;
+      padding: 15px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 15px 0;
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+    .nota strong { color: #0a2540; }
+
+    /* Árbol de decisión */
+    .arbol {
+      background: #f8fafc;
+      border: 1px dashed #c9a227;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 20px 0;
+      color: #0a2540;
+      line-height: 2;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: #0a2540;
+      color: #c9a227;
+      font-size: 0.85rem;
+      border-top: 3px solid #c9a227;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .contenido, .portada { padding: 20px; }
+      .portada h1 { font-size: 1.6rem; }
+      th, td { padding: 10px; font-size: 0.85rem; }
+      .header { flex-direction: column; gap: 15px; min-height: auto; }
+      .header img { position: static; margin: 0 auto; }
+      .header h1 { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado: logo a la izquierda, título centrado -->
+    <div class="header">
+      <h1>Instituto Tecnológico Beltrán</h1>
+    </div>
+
+    <!-- Portada -->
+    <div class="portada">
+      <h1>Árbol de Decisión aplicado a Telecomunicaciones</h1>
+      <p><span class="destacado">Materia:</span> Procesamiento de Aprendizaje Automático</p>
+      <p><span class="destacado">Docente:</span> Scudero, Yanina Ximena</p>
+      <p><span class="destacado">Alumno:</span> Lucas Nahuel Llanes</p>
+      <p><span class="destacado">Carrera:</span> Tecnicatura Superior en Ciencia de Datos e Inteligencia Artificial</p>
+      <p><span class="destacado">Institución:</span> Instituto Superior de Formación Técnica N° 197</p>
+      <p><span class="destacado">Año:</span> 2026</p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="contenido">
+      <div class="seccion">
+        <h2>1. Introducción</h2>
+        <p>El presente informe detalla la implementación manual de un algoritmo de Árbol de Decisión para resolver un problema de clasificación binaria en el sector de telecomunicaciones. El objetivo principal es predecir si un cliente aceptará una oferta de plan de datos móviles, basándose en un conjunto de datos compuesto por 10 registros.</p>
+        <p>Para ello, se aplican conceptos fundamentales de la teoría de la información, como la <strong>entropía</strong> y la <strong>ganancia de información</strong>, con el fin de seleccionar el atributo más relevante que permita segmentar la población de clientes de la manera más pura posible.</p>
+        <div class="nota">
+          <strong>Nota metodológica:</strong> este es un caso didáctico con un dataset muy reducido (10 registros) y trivialmente separable. Los resultados de precisión del 100% deben interpretarse en ese contexto, y no como una estimación generalizable a datos reales. En el apartado 5 se aclara este punto.
+        </div>
+      </div>
+
+      <div class="seccion">
+        <h2>2. Descripción del Problema y Datos</h2>
+        <p>Se dispone de información demográfica y de consumo de 10 clientes. Las variables predictoras son la edad, el uso mensual de datos y la tenencia de línea fija. La variable objetivo es la aceptación de la oferta.</p>
+        <h3>Atributos del Dataset</h3>
+        <ul>
+          <li><strong>ID:</strong> Identificador único del cliente.</li>
+          <li><strong>Edad:</strong> Edad del cliente en años.</li>
+          <li><strong>Uso de datos:</strong> Consumo mensual de datos en GB.</li>
+          <li><strong>Tiene línea fija:</strong> Indica si posee línea fija (Sí/No).</li>
+          <li><strong>Aceptó oferta:</strong> Variable objetivo (Sí/No).</li>
+        </ul>
+        <h3>Muestra de Datos</h3>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Edad</th><th>Uso de datos (GB)</th><th>Tiene línea fija</th><th>Aceptó oferta</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>24</td><td>2.5</td><td>No</td><td>No</td></tr>
+            <tr><td>2</td><td>38</td><td>6.0</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td>3</td><td>29</td><td>3.0</td><td>No</td><td>No</td></tr>
+            <tr><td>4</td><td>45</td><td>8.0</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td>5</td><td>52</td><td>7.5</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td>6</td><td>33</td><td>4.0</td><td>No</td><td>No</td></tr>
+            <tr><td>7</td><td>41</td><td>5.5</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td>8</td><td>27</td><td>2.0</td><td>No</td><td>No</td></tr>
+            <tr><td>9</td><td>36</td><td>6.5</td><td>Sí</td><td>Sí</td></tr>
+            <tr><td>10</td><td>31</td><td>3.5</td><td>No</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="seccion">
+        <h2>3. Metodología Aplicada</h2>
+        <p>La construcción del árbol de decisión sigue un enfoque descendente (Top-Down) basado en el algoritmo ID3, que utiliza la ganancia de información como criterio de selección.</p>
+        <h3>Cálculo de la Entropía</h3>
+        <p>La entropía mide el desorden o la impureza de un conjunto de datos. Se calcula mediante la siguiente fórmula:</p>
+        <pre><code>H(S) = - Σ (p_i * log₂(p_i))</code></pre>
+        <p>Donde <code>p_i</code> representa la proporción de cada clase en el conjunto.</p>
+        <h3>Ganancia de Información</h3>
+        <p>La ganancia de información es la diferencia entre la entropía original y la entropía ponderada después de dividir el conjunto por un atributo. Representa la reducción de la incertidumbre.</p>
+        <pre><code>Ganancia(S, A) = H(S) - Σ ((|S_v| / |S|) * H(S_v))</code></pre>
+        <p>El atributo con mayor ganancia se selecciona como nodo de decisión.</p>
+      </div>
+
+      <div class="seccion">
+        <h2>4. Implementación y Resultados</h2>
+        <h3>Entropía del Conjunto Original</h3>
+        <p>El conjunto inicial tiene 5 clientes que aceptaron y 5 que no, resultando en una distribución perfectamente equilibrada (50% y 50%).</p>
+        <pre><code>total = 10
+p_si = 5 / 10  # 0.5
+p_no = 5 / 10  # 0.5
+entropy_original = - (0.5 * log2(0.5) + 0.5 * log2(0.5))</code></pre>
+        <div class="resultado">
+          <strong>Resultado:</strong> Entropía Original = 1.0 (Máxima incertidumbre)
+        </div>
+        <h3>Evaluación de Atributos</h3>
+        <h4>Atributo: Edad</h4>
+        <p>Se agrupa en Joven (≤30), Adulto (31-50) y Mayor (>50).</p>
+        <ul>
+          <li>Joven: 3 no, 0 sí → Entropía = 0</li>
+          <li>Adulto: 4 sí, 2 no → Entropía = 0.918</li>
+          <li>Mayor: 1 sí, 0 no → Entropía = 0</li>
+        </ul>
+        <p><strong>Entropía Ponderada:</strong> (3/10)·0 + (6/10)·0.918 + (1/10)·0 = 0.551</p>
+        <div class="resultado">
+          <strong>Ganancia de Información (Edad):</strong> 1.0 - 0.551 = 0.449
+        </div>
+        <h4>Atributo: Tiene Línea Fija</h4>
+        <p>Este atributo divide el conjunto en dos grupos perfectos.</p>
+        <ul>
+          <li>Sí: 0 no, 5 sí → Entropía = 0</li>
+          <li>No: 5 no, 0 sí → Entropía = 0</li>
+        </ul>
+        <p><strong>Entropía Ponderada:</strong> (5/10)·0 + (5/10)·0 = 0.0</p>
+        <div class="resultado">
+          <strong>Ganancia de Información (Línea Fija):</strong> 1.0 - 0.0 = 1.0
+        </div>
+        <h4>Atributo: Uso de Datos</h4>
+        <p>Se agrupa en Bajo (≤3GB), Medio (3.1-6GB) y Alto (>6GB).</p>
+        <ul>
+          <li>Bajo: 3 no, 0 sí → Entropía = 0</li>
+          <li>Medio: 2 no, 2 sí → Entropía = 1.0</li>
+          <li>Alto: 0 no, 3 sí → Entropía = 0</li>
+        </ul>
+        <p><strong>Entropía Ponderada:</strong> (3/10)·0 + (4/10)·1.0 + (3/10)·0 = 0.4</p>
+        <div class="resultado">
+          <strong>Ganancia de Información (Uso de Datos):</strong> 1.0 - 0.4 = 0.6
+        </div>
+        <h3>Resumen de Ganancias</h3>
+        <table>
+          <thead>
+            <tr><th>Atributo</th><th>Ganancia de Información</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Tiene línea fija</strong></td><td><strong>1.0</strong></td></tr>
+            <tr><td>Uso de datos</td><td>0.6</td></tr>
+            <tr><td>Edad</td><td>0.449</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="seccion">
+        <h2>5. Construcción del Árbol de Decisión</h2>
+        <p>Dado que el atributo <strong>"Tiene línea fija"</strong> obtuvo la ganancia máxima (1.0), se selecciona como raíz del árbol. Este atributo es capaz de separar perfectamente las clases, por lo que no es necesario seguir dividiendo el conjunto.</p>
+        <div class="arbol">
+          ¿Tiene línea fija?<br>
+          ├── Sí → <strong>Aceptó la oferta</strong><br>
+          └── No → <strong>No aceptó la oferta</strong>
+        </div>
+        <h3>Métricas del Modelo</h3>
+        <ul>
+          <li><strong>Precisión:</strong> 100% (10/10 casos correctos <em>sobre el conjunto de entrenamiento</em>).</li>
+          <li><strong>Complejidad:</strong> Mínima (solo 1 nivel de profundidad).</li>
+          <li><strong>Interpretabilidad:</strong> Muy Alta.</li>
+        </ul>
+        <div class="nota">
+          <strong>Aclaración importante:</strong> la precisión del 100% corresponde al rendimiento del árbol sobre los mismos 10 registros con los que fue construido (conjunto de entrenamiento). Al tratarse de un caso trivialmente separable por una única variable, no se realizó una partición train/test. En un escenario real con más datos, sería imprescindible evaluar el modelo sobre un conjunto de prueba independiente y, preferentemente, aplicar validación cruzada para estimar su capacidad de generalización.
+        </div>
+      </div>
+
+      <div class="seccion">
+        <h2>6. Conclusiones</h2>
+        <p>La implementación manual del árbol de decisión permitió identificar que la tenencia de línea fija es el predictor más fuerte para la aceptación de la oferta en este conjunto de datos particular. La ganancia de información perfecta (1.0) indica que este atributo elimina por completo la incertidumbre.</p>
+        <p>Si bien se trata de un caso ideal con pocos datos, el ejercicio refuerza la comprensión de los fundamentos matemáticos detrás de los algoritmos de aprendizaje automático, sentando las bases para abordar problemas más complejos con herramientas como Scikit-learn en el futuro.</p>
+        <p>Este análisis destaca la importancia de la selección de atributos y cómo una variable correctamente elegida puede simplificar drásticamente un modelo predictivo.</p>
+        <p>Como trabajo futuro, se propone replicar el ejercicio sobre datasets de mayor tamaño y con clases no perfectamente separables, incorporando métricas adicionales (matriz de confusión, validación cruzada, curvas ROC) que permitan evaluar el desempeño del modelo de manera más realista.</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Informe generado por Lucas Nahuel Llanes — 2026</p>
+    </div>
+  </div>
+</body>
+</html>
